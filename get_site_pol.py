@@ -7,9 +7,9 @@ def convert_time(thisTime):
 	'''purpose:获得本地时间和utc时间'''
 	utcTime = datetime.strptime(thisTime,'%Y%m%d%H')
 	localTime = (utcTime+timedelta(hours=8))
-	localTime2 = localTime.strftime('%Y%m%d%H')
+	localTime2 = localTime.strftime('%Y-%m-%d %H:00')
 
-	return thisTime,localTime2
+	return utcTime.strftime('%Y-%m-%d %H:00'),localTime2
 
 def get_site_pol(dataPath,latlonFile,ctlFile,speList):
 	'''purpose:获取站点的污染物模拟结果'''
@@ -42,14 +42,17 @@ def write_csv(dictData,headName,outPath,fileName):
 			for k,v in v.items():
 				writer.writerow(v)
 
-def write_all_time(begTime,endTime,dataPath,latlonFile,speList,headName):
+def write_all_time(begTime,endTime,dataPath,latlonFile,speList,fileStype):
 	'''purpose:获取所有时刻的污染数据'''
+	headName = ['Station','区域','站点','经度','纬度','Row','Col','UTCTime','localTime']
+	headName.extend(speList)
 	startTime = datetime.strptime(begTime,'%Y%m%d%H')
 	endTime2 = datetime.strptime(endTime,'%Y%m%d%H')
 	allData = {}
 	while startTime <= endTime2:
 		thisTime = startTime.strftime('%Y%m%d%H')
-		ctlFile = 'testd2.{}.ctl'.format(thisTime)
+		print('>>>>%s'%thisTime)
+		ctlFile = fileStype.format(thisTime)
 		sitePol = get_site_pol(dataPath,latlonFile,ctlFile,speList)
 		allData[thisTime] = sitePol
 		startTime += timedelta(hours=1)
@@ -61,10 +64,9 @@ if __name__ == '__main__':
 	dataPath = r'C:\Users\schao\Downloads\NAQ数据处理\data'
 	latlonFile = r'C:\Users\schao\Downloads\datagrid\输出数据1.csv'
 	speList = ['PM25','so2','no2']
-	headName = ['Station','区域','站点','经度','纬度','Row','Col','UTCTime','localTime']
-	headName.extend(speList)
 	fileName = '输出数据2'
-	write_all_time(begTime,endTime,dataPath,latlonFile,speList,headName)
+	fileStype = 'testd2.{}.ctl'
+	write_all_time(begTime,endTime,dataPath,latlonFile,speList,fileStype)
 
 
 

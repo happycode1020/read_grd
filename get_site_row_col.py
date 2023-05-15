@@ -1,13 +1,10 @@
 import os,csv
 from xgrads import CtlDescriptor
 from xgrads import open_CtlDataset
-import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 
 def get_dset(dataPath,ctlFile):
 	'''purpose:获取变量'''
-
 	os.chdir(dataPath)
 	ctl = CtlDescriptor(file=ctlFile)
 	dset = open_CtlDataset(ctlFile)
@@ -47,8 +44,9 @@ def write_csv(dictData,headName,outPath,fileName):
 		for k,v in dictData.items():
 			writer.writerow(v)
 
-def write_site_row_col(latlonFile,ctlFile,dataPath,headName):
+def write_site_row_col(latlonFile,ctlFile,dataPath,fileName):
 	'''purpose:获得所有站点的行列及写出'''
+	headName = ['Station','区域','站点','经度','纬度','Row','Col']
 	latlon = get_lat_lon(latlonFile)
 	newDict = {}
 	for k in latlon.keys():
@@ -59,13 +57,13 @@ def write_site_row_col(latlonFile,ctlFile,dataPath,headName):
 		col.append(sRow)
 		col.append(sCol)
 		newDict[k] = col
-	write_csv(newDict,headName,dataPath,'输出数据1')
+	write_csv(newDict,headName,dataPath,fileName)
 
 if __name__ == '__main__':
 	dataPath = r'C:\Users\schao\Downloads\datagrid'
 	ctlFile = 'grid.d2.ctl'
 	latlonFile = 'C:/Users/schao/Downloads/NAQ数据处理/2020站点经纬度.csv'
-	headName = ['Station','区域','站点','经度','纬度','Row','Col']
-	write_site_row_col(latlonFile,ctlFile,dataPath,headName)
+	fileName = '输出数据1'
+	write_site_row_col(latlonFile,ctlFile,dataPath,fileName)
 
 
