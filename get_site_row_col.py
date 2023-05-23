@@ -3,6 +3,21 @@ from xgrads import CtlDescriptor
 from xgrads import open_CtlDataset
 import numpy as np
 
+import time
+from functools import wraps
+  
+def fn_timer(function):
+   @wraps (function)
+   def function_timer(*args,**kwargs):
+   	t0 = time.time()
+   	result = function( * args, **kwargs)
+   	t1 = time.time()
+   	print ( "Total time running %s: %s seconds" %
+         (function.__name__, str (t1 - t0))
+         )
+   	return result
+   return function_timer
+
 def get_dset(dataPath,ctlFile):
 	'''purpose:获取变量'''
 	os.chdir(dataPath)
@@ -11,6 +26,7 @@ def get_dset(dataPath,ctlFile):
 
 	return dset
 
+@fn_timer
 def get_lat_lon(latlonFile):
 	'''purpose:获取站点的经纬度数据'''
 	latlon = {}
@@ -23,6 +39,7 @@ def get_lat_lon(latlonFile):
 
 	return latlon
 
+@fn_timer
 def get_row_col(lat,lon,wrfCtlFile,dataPath):
 	'''purpose:基于wrf的经纬度网格，获取目标点位在网格的位置'''
 	xlong = get_dset(dataPath,wrfCtlFile).get('XLONG')[0,:,:]
@@ -36,6 +53,7 @@ def get_row_col(lat,lon,wrfCtlFile,dataPath):
 
 	return row,col
 
+@fn_timer
 def write_csv(dictData,headName,outPath,fileName):
 	'''purpose:字典数据写出到csv文件'''
 	with open(outPath+'/'+fileName+'.csv','w',newline='') as csvfile:
@@ -44,6 +62,7 @@ def write_csv(dictData,headName,outPath,fileName):
 		for k,v in dictData.items():
 			writer.writerow(v)
 
+@fn_timer
 def write_site_row_col(latlonFile,ctlFile,dataPath,fileName):
 	'''purpose:获得所有站点的行列及写出'''
 	headName = ['Station','区域','站点','经度','纬度','Row','Col']
